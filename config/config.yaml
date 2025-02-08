@@ -1,0 +1,43 @@
+port: 8000
+log_level: "info"
+
+rate_limit:
+  enabled: true
+  requests: 1000
+  interval: 1s
+
+auth:
+  enabled: false # 示例中默认禁用认证
+  type: "jwt"
+  jwt:
+    secret_key: "your-secret-key-for-jwt-signature"
+  oauth2: # OAuth 2.0 配置
+    enabled: false # 默认禁用 OAuth 2.0
+    token_endpoint: "https://example.com/oauth2/token" # OAuth 2.0 Token Endpoint
+    client_id: "your-client-id"
+    client_secret: "your-client-secret"
+
+service_discovery: # 服务发现配置
+  enabled: true # 启用服务发现
+  type: "consul" # 使用 Consul
+  consul:
+    address: "localhost:8500" # Consul 地址
+
+jaeger: # Jaeger 链路追踪配置
+  enabled: false # 默认禁用 Jaeger
+  service_name: "api-gateway"
+  agent_address: "localhost:6831" # Jaeger Agent 地址
+
+routes:
+  - path: "/api/users"
+    # target_url: "http://localhost:8081" #  静态 TargetURL 注释掉
+    service_name: "user-service" # 使用服务发现，指定服务名
+    timeout: "5s"
+  - path: "/api/orders"
+    # target_url: "http://localhost:8082" # 静态 TargetURL 注释掉
+    service_name: "order-service" # 使用服务发现，指定服务名
+    timeout: "10s"
+  - path: "/" # 默认路由
+    # target_url: "http://localhost:8083" # 静态 TargetURL 注释掉
+    service_name: "default-service" # 使用服务发现，指定服务名
+    timeout: "3s"
